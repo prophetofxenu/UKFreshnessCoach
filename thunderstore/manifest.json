@@ -1,9 +1,0 @@
-{
-  "name": "UKFreshnessCoach",
-  "description": "Adds an indicator under the crosshair for when weapon freshness is low.",
-  "version_number": "1.0.1",
-  "dependencies": [
-    "BepInEx-BepInExPack-5.4.2100"
-  ],
-  "website_url": "https://github.com/prophetofxenu/UKFreshnessCoach"
-}
