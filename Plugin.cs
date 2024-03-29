@@ -13,9 +13,19 @@ namespace UKFreshnessCoach
         private static Harmony harmony;
         private static BepInEx.Logging.ManualLogSource _logger;
 
+        // Configuration values
+        
+        // Messages
         private static ConfigEntry<string> usedMessage;
         private static ConfigEntry<string> staleMessage;
         private static ConfigEntry<string> dullMessage;
+        // Colors
+        private static ConfigEntry<string> usedPrimaryColor;
+        private static ConfigEntry<string> usedSecondaryColor;
+        private static ConfigEntry<string> stalePrimaryColor;
+        private static ConfigEntry<string> staleSecondaryColor;
+        private static ConfigEntry<string> dullPrimaryColor;
+        private static ConfigEntry<string> dullSecondaryColor;
 
         private static GameObject crosshair;
         private static GameObject textObject;
@@ -24,7 +34,7 @@ namespace UKFreshnessCoach
 
         private static float freshMin;
         private static float usedMin;
-        private static float dullMin;
+        private static float staleMin;
 
         private void Awake()
         {
@@ -48,6 +58,30 @@ namespace UKFreshnessCoach
                                       "DullMessage",
                                       "GO PLAY A VISUAL NOVEL",
                                       "Message displayed when the current freshness is \"Dull\".");
+            usedPrimaryColor = Config.Bind("Colors",
+                                           "UsedPrimaryColor",
+                                           "white",
+                                           "Primary color used when the current freshness is \"Dull\".");
+            usedSecondaryColor = Config.Bind("Colors",
+                                             "UsedSecondaryColor",
+                                             "orange",
+                                             "Secondary color used when the current freshness is \"Dull\".");
+            stalePrimaryColor = Config.Bind("Colors",
+                                            "StalePrimaryColor",
+                                            "orange",
+                                            "Primary color used when the current freshness is \"Stale\".");
+            staleSecondaryColor = Config.Bind("Colors",
+                                              "StaleSecondaryColor",
+                                              "red",
+                                              "Secondary color used when the current freshness is \"Stale\".");
+            dullPrimaryColor = Config.Bind("Colors",
+                                             "DullPrimaryColor",
+                                             "red",
+                                             "Primary color used when the current freshness is \"Dull\".");
+            dullSecondaryColor = Config.Bind("Colors",
+                                            "DullSecondaryColor",
+                                            "black",
+                                            "Secondary color used when the current freshness is \"Dull\".");
         }
 
         // Retrieve the current settings for when the current weapon becomes used and stale
@@ -61,8 +95,8 @@ namespace UKFreshnessCoach
                     freshMin = item.min;
                 } else if (item.state == StyleFreshnessState.Used) {
                     usedMin = item.min;
-                } else if (item.state == StyleFreshnessState.Dull) {
-                    dullMin = item.min;
+                } else if (item.state == StyleFreshnessState.Stale) {
+                    staleMin = item.min;
                 }
             }
         }
@@ -108,8 +142,8 @@ namespace UKFreshnessCoach
             int millisecond = (int) ((UnityEngine.Time.fixedTime - System.Math.Truncate(UnityEngine.Time.fixedTime)) * 100);
             string color;
 
-            if (amt < dullMin) {
-                color = millisecond / 4 % 2 == 0 ? "black" : "red";
+            if (amt < staleMin) {
+                color = millisecond / 4 % 2 == 0 ? dullPrimaryColor.Value : dullSecondaryColor.Value;
 
                 textComp.text = $"<color={color}>{dullMessage.Value}</color>";
                 textComp.fontSize = 22;
@@ -120,7 +154,7 @@ namespace UKFreshnessCoach
                     textHomePos.z
                 );
             } else if (amt < usedMin) {
-                color = millisecond / 4 % 2 == 0 ? "red" : "orange";
+                color = millisecond / 4 % 2 == 0 ? stalePrimaryColor.Value : staleSecondaryColor.Value;
 
                 textComp.text = $"<color={color}>{staleMessage.Value}</color>";
                 textComp.fontSize = 20;
@@ -131,7 +165,7 @@ namespace UKFreshnessCoach
                     textHomePos.z
                 );
             } else if (amt < freshMin) {
-                color = millisecond / 6 % 2 == 0 ? "orange" : "white";
+                color = millisecond / 6 % 2 == 0 ? usedPrimaryColor.Value : usedSecondaryColor.Value;
 
                 textComp.text = $"<color={color}>{usedMessage.Value}</color>";
                 textComp.fontSize = 16;
