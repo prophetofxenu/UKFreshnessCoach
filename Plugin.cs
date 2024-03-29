@@ -186,5 +186,13 @@ namespace UKFreshnessCoach
                 textObject.SetActive(false);
             }
         }
+
+        // When the combo ends, clear the text from the screen
+        [HarmonyPatch(typeof(StyleHUD), "ComboOver")]
+        [HarmonyPostfix]
+        static void ClearTextOnComboOver() {
+            if (textObject)
+                textObject.SetActive(false);
+        }
     }
 }
