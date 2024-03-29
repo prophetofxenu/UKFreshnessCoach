@@ -15,6 +15,7 @@ namespace UKFreshnessCoach
 
         private static ConfigEntry<string> usedMessage;
         private static ConfigEntry<string> staleMessage;
+        private static ConfigEntry<string> dullMessage;
 
         private static GameObject crosshair;
         private static GameObject textObject;
@@ -23,6 +24,7 @@ namespace UKFreshnessCoach
 
         private static float freshMin;
         private static float usedMin;
+        private static float dullMin;
 
         private void Awake()
         {
@@ -42,6 +44,10 @@ namespace UKFreshnessCoach
                                        "StaleMessage",
                                        "YOU'RE NOT VERY GOOD AT THIS",
                                        "Message displayed when the current freshness is \"Stale\".");
+            dullMessage = Config.Bind("General",
+                                      "DullMessage",
+                                      "GO PLAY A VISUAL NOVEL",
+                                      "Message displayed when the current freshness is \"Dull\".");
         }
 
         // Retrieve the current settings for when the current weapon becomes used and stale
@@ -55,6 +61,8 @@ namespace UKFreshnessCoach
                     freshMin = item.min;
                 } else if (item.state == StyleFreshnessState.Used) {
                     usedMin = item.min;
+                } else if (item.state == StyleFreshnessState.Dull) {
+                    dullMin = item.min;
                 }
             }
         }
@@ -100,12 +108,19 @@ namespace UKFreshnessCoach
             int millisecond = (int) ((UnityEngine.Time.fixedTime - System.Math.Truncate(UnityEngine.Time.fixedTime)) * 100);
             string color;
 
-            if (amt < usedMin) {
-                if (millisecond / 4 % 2 == 0) {
-                    color = "red";
-                } else {
-                    color = "orange";
-                }
+            if (amt < dullMin) {
+                color = millisecond / 4 % 2 == 0 ? "black" : "red";
+
+                textComp.text = $"<color={color}>{dullMessage.Value}</color>";
+                textComp.fontSize = 22;
+
+                textObject.transform.localPosition = new Vector3(
+                    textHomePos.x + UnityEngine.Random.Range(-4, 4),
+                    textHomePos.y + UnityEngine.Random.Range(-4, 4),
+                    textHomePos.z
+                );
+            } else if (amt < usedMin) {
+                color = millisecond / 4 % 2 == 0 ? "red" : "orange";
 
                 textComp.text = $"<color={color}>{staleMessage.Value}</color>";
                 textComp.fontSize = 20;
@@ -116,11 +131,7 @@ namespace UKFreshnessCoach
                     textHomePos.z
                 );
             } else if (amt < freshMin) {
-                if (millisecond / 6 % 2 == 0) {
-                    color = "orange";
-                } else {
-                    color = "white";
-                }
+                color = millisecond / 6 % 2 == 0 ? "orange" : "white";
 
                 textComp.text = $"<color={color}>{usedMessage.Value}</color>";
                 textComp.fontSize = 16;
