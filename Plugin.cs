@@ -61,11 +61,11 @@ namespace UKFreshnessCoach
             usedPrimaryColor = Config.Bind("Colors",
                                            "UsedPrimaryColor",
                                            "white",
-                                           "Primary color used when the current freshness is \"Dull\".");
+                                           "Primary color used when the current freshness is \"Used\".");
             usedSecondaryColor = Config.Bind("Colors",
                                              "UsedSecondaryColor",
                                              "orange",
-                                             "Secondary color used when the current freshness is \"Dull\".");
+                                             "Secondary color used when the current freshness is \"Used\".");
             stalePrimaryColor = Config.Bind("Colors",
                                             "StalePrimaryColor",
                                             "orange",
