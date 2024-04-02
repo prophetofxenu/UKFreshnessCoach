@@ -15,6 +15,9 @@ namespace UKFreshnessCoach
 
         // Configuration values
         
+        // Behavior
+        private static ConfigEntry<bool> shaking;
+        private static ConfigEntry<bool> flashing;
         // Messages
         private static ConfigEntry<string> usedMessage;
         private static ConfigEntry<string> staleMessage;
@@ -46,6 +49,14 @@ namespace UKFreshnessCoach
             Logger.LogDebug($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
 
             // Load config
+            shaking = Config.Bind("General",
+                                  "Shaking",
+                                  true,
+                                  "Shake the text.");
+            flashing = Config.Bind("General",
+                                   "Flashing",
+                                   true,
+                                   "Flash the text.");
             usedMessage = Config.Bind("General",
                                       "UsedMessage",
                                       "USE A DIFFERENT FUCKING GUN",
@@ -143,38 +154,56 @@ namespace UKFreshnessCoach
             string color;
 
             if (amt < staleMin) {
-                color = millisecond / 4 % 2 == 0 ? dullPrimaryColor.Value : dullSecondaryColor.Value;
+                if (flashing.Value && millisecond / 4 % 2 == 0) {
+                    color = dullSecondaryColor.Value;
+                } else {
+                    color = dullPrimaryColor.Value;
+                }
 
                 textComp.text = $"<color={color}>{dullMessage.Value}</color>";
                 textComp.fontSize = 22;
 
-                textObject.transform.localPosition = new Vector3(
-                    textHomePos.x + UnityEngine.Random.Range(-4, 4),
-                    textHomePos.y + UnityEngine.Random.Range(-4, 4),
-                    textHomePos.z
-                );
+                if (shaking.Value) {
+                    textObject.transform.localPosition = new Vector3(
+                        textHomePos.x + UnityEngine.Random.Range(-4, 4),
+                        textHomePos.y + UnityEngine.Random.Range(-4, 4),
+                        textHomePos.z
+                    );
+                }
             } else if (amt < usedMin) {
-                color = millisecond / 4 % 2 == 0 ? stalePrimaryColor.Value : staleSecondaryColor.Value;
+                if (flashing.Value && millisecond / 4 % 2 == 0) {
+                    color = staleSecondaryColor.Value;
+                } else {
+                    color = stalePrimaryColor.Value;
+                }
 
                 textComp.text = $"<color={color}>{staleMessage.Value}</color>";
                 textComp.fontSize = 20;
 
-                textObject.transform.localPosition = new Vector3(
-                    textHomePos.x + UnityEngine.Random.Range(-3, 3),
-                    textHomePos.y + UnityEngine.Random.Range(-3, 3),
-                    textHomePos.z
-                );
+                if (shaking.Value) {
+                    textObject.transform.localPosition = new Vector3(
+                        textHomePos.x + UnityEngine.Random.Range(-3, 3),
+                        textHomePos.y + UnityEngine.Random.Range(-3, 3),
+                        textHomePos.z
+                    );
+                }
             } else if (amt < freshMin) {
-                color = millisecond / 6 % 2 == 0 ? usedPrimaryColor.Value : usedSecondaryColor.Value;
+                if (flashing.Value && millisecond / 6 % 2 == 0) {
+                    color = usedSecondaryColor.Value;
+                } else {
+                    color = usedPrimaryColor.Value;
+                }
 
                 textComp.text = $"<color={color}>{usedMessage.Value}</color>";
                 textComp.fontSize = 16;
 
-                textObject.transform.localPosition = new Vector3(
-                    textHomePos.x + UnityEngine.Random.Range(-2, 2),
-                    textHomePos.y + UnityEngine.Random.Range(-2, 2),
-                    textHomePos.z
-                );
+                if (shaking.Value) {
+                    textObject.transform.localPosition = new Vector3(
+                        textHomePos.x + UnityEngine.Random.Range(-2, 2),
+                        textHomePos.y + UnityEngine.Random.Range(-2, 2),
+                        textHomePos.z
+                    );
+                }
             }
         }
 
